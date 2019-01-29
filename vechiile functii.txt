@@ -1,0 +1,97 @@
+<?php
+		
+		function register_person()
+		{
+			global $conn;
+
+			$username = $_POST['username'];
+			$email = $_POST['email'];
+			$pass = $_POST['password'];
+
+			$sql = "INSERT INTO `user` VALUES('', '$username', '$email', '$pass', '0')"; 
+			$res = mysqli_query($conn, $sql) or die("Nu am introdus in baza de date!");
+
+			header("Location:/index.php?pagina=homepage");
+		}
+
+		function register_company()
+		{
+			global $conn;
+
+			$username = $_POST['username'];
+			$email = $_POST['email'];
+			$pass = $_POST['password'];
+
+			$sql = "INSERT INTO `user` VALUES('', '$username', '$email', '$pass', '1')"; 
+			$res = mysqli_query($conn, $sql) or die("Nu am introdus in baza de date!");
+
+			header("Location:/index.php?pagina=homepage");
+		}
+
+		function login()
+		{
+			global $conn;
+
+			$user = $_POST['username_v'];
+			$pass = $_POST['password_v'];
+
+			$sql = "SELECT * FROM `user` WHERE `username`='$user' AND `password`='$pass'";
+			$res = mysqli_query($conn, $sql) or die("Nume de utilizator sau parola gresita!");
+			$row = mysqli_fetch_assoc($res);
+
+			if (!empty($row))
+			{
+				session_start();
+
+				$_SESSION['id'] = $row['id'];
+				$_SESSION['username'] = $row['username'];
+				$_SESSION['password'] = $row['password'];
+				$_SESSION['email'] = $row['email'];
+
+				header("Location:/index.php?pagina=homepage");
+			}
+		}
+
+		function posteaza_anunt($arr)
+		{
+			global $conn;
+
+			extract($arr);
+			$descriere = ereg_replace("\r\n?", "\n", $descriere);
+			$descriere = str_replace("\n", '<br />', $descriere);
+
+			$sql = "INSERT INTO `anunt` VALUES('', '$titlu', '$companie', '$nume_post', '$descriere')";
+			$res = mysqli_query($conn, $sql) or die("Nu am putut posta anuntul!");
+
+			header("Location:/index.php?pagina=homepage");
+		}
+
+		function anunt()
+		{
+			global $conn;
+
+			$sql = "SELECT * FROM `anunt`";
+			$res = mysqli_query($conn, $sql) or die("Error!");
+			$data = array();
+
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				array_push($data, $row);
+			}
+
+			return $data;
+		}
+
+		function getAnuntById($id)
+		{
+			global $conn;
+
+			$sql = "SELECT * FROM `anunt` WHERE `id`='$id'";
+			$res = mysqli_query($conn, $sql) or die("Error!");
+			$row = mysqli_fetch_assoc($res);
+
+			if (!empty($row))
+				return $row;
+		}
+
+	?>
